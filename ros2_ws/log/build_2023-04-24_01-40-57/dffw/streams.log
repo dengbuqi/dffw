@@ -1,0 +1,84 @@
+[0.015s] Invoking command in '/workspace/ros2_ws/build/dffw': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/local/bin/cmake /workspace/ros2_ws/src/dffw -DCMAKE_INSTALL_PREFIX=/workspace/ros2_ws/install/dffw
+[0.097s] -- The C compiler identification is GNU 11.3.0
+[0.161s] -- The CXX compiler identification is GNU 11.3.0
+[0.173s] -- Detecting C compiler ABI info
+[0.232s] -- Detecting C compiler ABI info - done
+[0.247s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.247s] -- Detecting C compile features
+[0.248s] -- Detecting C compile features - done
+[0.252s] -- Detecting CXX compiler ABI info
+[0.324s] -- Detecting CXX compiler ABI info - done
+[0.339s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.339s] -- Detecting CXX compile features
+[0.340s] -- Detecting CXX compile features - done
+[0.343s] -- Found ament_cmake: 1.3.3 (/opt/ros/humble/share/ament_cmake/cmake)
+[1.217s] -- Found Python3: /usr/bin/python3.10 (found version "3.10.6") found components: Interpreter 
+[1.318s] -- Found rclcpp: 16.0.3 (/opt/ros/humble/share/rclcpp/cmake)
+[1.374s] -- Found rosidl_generator_c: 3.1.4 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+[1.381s] -- Found rosidl_adapter: 3.1.4 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[1.394s] -- Found rosidl_generator_cpp: 3.1.4 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+[1.417s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[1.449s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[1.557s] -- Found rmw_implementation_cmake: 6.1.1 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+[1.560s] -- Found rmw_fastrtps_cpp: 6.2.2 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+[1.676s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.2")  
+[1.709s] -- Found FastRTPS: /opt/ros/humble/include  
+[1.773s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[1.787s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+[1.855s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+[1.856s] -- Found Threads: TRUE  
+[2.113s] -- Found rclpy: 3.3.7 (/opt/ros/humble/share/rclpy/cmake)
+[2.289s] -- Configuring done (2.2s)
+[2.297s] -- Generating done (0.0s)
+[2.299s] -- Build files have been written to: /workspace/ros2_ws/build/dffw
+[2.312s] Invoked command in '/workspace/ros2_ws/build/dffw' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/local/bin/cmake /workspace/ros2_ws/src/dffw -DCMAKE_INSTALL_PREFIX=/workspace/ros2_ws/install/dffw
+[2.313s] Invoking command in '/workspace/ros2_ws/build/dffw': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/local/bin/cmake --build /workspace/ros2_ws/build/dffw -- -j4 -l4
+[2.371s] Built target ament_cmake_python_copy_dffw
+[2.590s] running egg_info
+[2.591s] creating dffw.egg-info
+[2.609s] writing dffw.egg-info/PKG-INFO
+[2.609s] writing dependency_links to dffw.egg-info/dependency_links.txt
+[2.610s] writing top-level names to dffw.egg-info/top_level.txt
+[2.610s] writing manifest file 'dffw.egg-info/SOURCES.txt'
+[2.663s] reading manifest file 'dffw.egg-info/SOURCES.txt'
+[2.664s] writing manifest file 'dffw.egg-info/SOURCES.txt'
+[2.685s] Built target ament_cmake_python_build_dffw_egg
+[2.693s] Invoked command in '/workspace/ros2_ws/build/dffw' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/local/bin/cmake --build /workspace/ros2_ws/build/dffw -- -j4 -l4
+[2.742s] Invoking command in '/workspace/ros2_ws/build/dffw': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/local/bin/cmake --install /workspace/ros2_ws/build/dffw
+[2.775s] -- Install configuration: ""
+[2.775s] -- Installing: /workspace/ros2_ws/install/dffw/share/dffw/environment/pythonpath.sh
+[2.776s] -- Installing: /workspace/ros2_ws/install/dffw/share/dffw/environment/pythonpath.dsv
+[2.776s] -- Installing: /workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw-0.0.0-py3.10.egg-info
+[2.777s] -- Installing: /workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw-0.0.0-py3.10.egg-info/dependency_links.txt
+[2.777s] -- Installing: /workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw-0.0.0-py3.10.egg-info/top_level.txt
+[2.777s] -- Installing: /workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw-0.0.0-py3.10.egg-info/SOURCES.txt
+[2.777s] -- Installing: /workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw-0.0.0-py3.10.egg-info/PKG-INFO
+[2.777s] -- Installing: /workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw
+[2.777s] -- Installing: /workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw/ff.py
+[2.777s] -- Installing: /workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw/__init__.py
+[2.777s] -- Installing: /workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw/dataconvert.py
+[2.778s] -- Installing: /workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw/common.py
+[2.819s] Listing '/workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw'...
+[2.820s] Compiling '/workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw/__init__.py'...
+[2.820s] Compiling '/workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw/common.py'...
+[2.820s] Compiling '/workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw/dataconvert.py'...
+[2.820s] Compiling '/workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw/ff.py'...
+[2.825s] -- Installing: /workspace/ros2_ws/install/dffw/lib/dffw/service_node0.py
+[2.825s] -- Installing: /workspace/ros2_ws/install/dffw/lib/dffw/service_node1.py
+[2.826s] -- Installing: /workspace/ros2_ws/install/dffw/lib/dffw/master_node.py
+[2.826s] -- Installing: /workspace/ros2_ws/install/dffw/share/ament_index/resource_index/package_run_dependencies/dffw
+[2.826s] -- Installing: /workspace/ros2_ws/install/dffw/share/ament_index/resource_index/parent_prefix_path/dffw
+[2.826s] -- Installing: /workspace/ros2_ws/install/dffw/share/dffw/environment/ament_prefix_path.sh
+[2.826s] -- Installing: /workspace/ros2_ws/install/dffw/share/dffw/environment/ament_prefix_path.dsv
+[2.826s] -- Installing: /workspace/ros2_ws/install/dffw/share/dffw/environment/path.sh
+[2.826s] -- Installing: /workspace/ros2_ws/install/dffw/share/dffw/environment/path.dsv
+[2.827s] -- Installing: /workspace/ros2_ws/install/dffw/share/dffw/local_setup.bash
+[2.827s] -- Installing: /workspace/ros2_ws/install/dffw/share/dffw/local_setup.sh
+[2.827s] -- Installing: /workspace/ros2_ws/install/dffw/share/dffw/local_setup.zsh
+[2.827s] -- Installing: /workspace/ros2_ws/install/dffw/share/dffw/local_setup.dsv
+[2.828s] -- Installing: /workspace/ros2_ws/install/dffw/share/dffw/package.dsv
+[2.828s] -- Installing: /workspace/ros2_ws/install/dffw/share/ament_index/resource_index/packages/dffw
+[2.828s] -- Installing: /workspace/ros2_ws/install/dffw/share/dffw/cmake/dffwConfig.cmake
+[2.828s] -- Installing: /workspace/ros2_ws/install/dffw/share/dffw/cmake/dffwConfig-version.cmake
+[2.828s] -- Installing: /workspace/ros2_ws/install/dffw/share/dffw/package.xml
+[2.844s] Invoked command in '/workspace/ros2_ws/build/dffw' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/local/bin/cmake --install /workspace/ros2_ws/build/dffw

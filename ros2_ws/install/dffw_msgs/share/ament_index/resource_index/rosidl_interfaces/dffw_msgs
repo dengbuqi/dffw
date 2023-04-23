@@ -1,0 +1,6 @@
+msg/InferanceForward.idl
+msg/InferanceForward.msg
+msg/PytorchTensorFloat32.idl
+msg/PytorchTensorFloat32.msg
+msg/TrainForward.idl
+msg/TrainForward.msg

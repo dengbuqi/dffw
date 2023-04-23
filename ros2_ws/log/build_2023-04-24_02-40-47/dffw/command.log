@@ -1,0 +1,4 @@
+Invoking command in '/workspace/ros2_ws/build/dffw': CMAKE_PREFIX_PATH=/workspace/ros2_ws/install/dffw_msgs:/workspace/ros2_ws/install/dffw:/opt/ros/humble /usr/local/bin/cmake --build /workspace/ros2_ws/build/dffw -- -j4 -l4
+Invoked command in '/workspace/ros2_ws/build/dffw' returned '0': CMAKE_PREFIX_PATH=/workspace/ros2_ws/install/dffw_msgs:/workspace/ros2_ws/install/dffw:/opt/ros/humble /usr/local/bin/cmake --build /workspace/ros2_ws/build/dffw -- -j4 -l4
+Invoking command in '/workspace/ros2_ws/build/dffw': CMAKE_PREFIX_PATH=/workspace/ros2_ws/install/dffw_msgs:/workspace/ros2_ws/install/dffw:/opt/ros/humble /usr/local/bin/cmake --install /workspace/ros2_ws/build/dffw
+Invoked command in '/workspace/ros2_ws/build/dffw' returned '0': CMAKE_PREFIX_PATH=/workspace/ros2_ws/install/dffw_msgs:/workspace/ros2_ws/install/dffw:/opt/ros/humble /usr/local/bin/cmake --install /workspace/ros2_ws/build/dffw

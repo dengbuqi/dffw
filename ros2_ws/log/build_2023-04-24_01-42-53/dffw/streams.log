@@ -1,0 +1,45 @@
+[0.024s] Invoking command in '/workspace/ros2_ws/build/dffw': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/local/bin/cmake --build /workspace/ros2_ws/build/dffw -- -j4 -l4
+[0.082s] Built target ament_cmake_python_copy_dffw
+[0.303s] running egg_info
+[0.321s] writing dffw.egg-info/PKG-INFO
+[0.321s] writing dependency_links to dffw.egg-info/dependency_links.txt
+[0.322s] writing top-level names to dffw.egg-info/top_level.txt
+[0.374s] reading manifest file 'dffw.egg-info/SOURCES.txt'
+[0.375s] writing manifest file 'dffw.egg-info/SOURCES.txt'
+[0.396s] Built target ament_cmake_python_build_dffw_egg
+[0.407s] Invoked command in '/workspace/ros2_ws/build/dffw' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/local/bin/cmake --build /workspace/ros2_ws/build/dffw -- -j4 -l4
+[0.465s] Invoking command in '/workspace/ros2_ws/build/dffw': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/local/bin/cmake --install /workspace/ros2_ws/build/dffw
+[0.497s] -- Install configuration: ""
+[0.497s] -- Up-to-date: /workspace/ros2_ws/install/dffw/share/dffw/environment/pythonpath.sh
+[0.497s] -- Up-to-date: /workspace/ros2_ws/install/dffw/share/dffw/environment/pythonpath.dsv
+[0.497s] -- Up-to-date: /workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw-0.0.0-py3.10.egg-info
+[0.497s] -- Installing: /workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw-0.0.0-py3.10.egg-info/dependency_links.txt
+[0.498s] -- Installing: /workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw-0.0.0-py3.10.egg-info/top_level.txt
+[0.498s] -- Installing: /workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw-0.0.0-py3.10.egg-info/SOURCES.txt
+[0.498s] -- Installing: /workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw-0.0.0-py3.10.egg-info/PKG-INFO
+[0.498s] -- Up-to-date: /workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw
+[0.498s] -- Installing: /workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw/ff.py
+[0.499s] -- Up-to-date: /workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw/__init__.py
+[0.499s] -- Up-to-date: /workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw/dataconvert.py
+[0.499s] -- Up-to-date: /workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw/common.py
+[0.537s] Listing '/workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw'...
+[0.537s] Compiling '/workspace/ros2_ws/install/dffw/local/lib/python3.10/dist-packages/dffw/ff.py'...
+[0.542s] -- Up-to-date: /workspace/ros2_ws/install/dffw/lib/dffw/service_node0.py
+[0.542s] -- Up-to-date: /workspace/ros2_ws/install/dffw/lib/dffw/service_node1.py
+[0.542s] -- Up-to-date: /workspace/ros2_ws/install/dffw/lib/dffw/master_node.py
+[0.542s] -- Up-to-date: /workspace/ros2_ws/install/dffw/share/ament_index/resource_index/package_run_dependencies/dffw
+[0.542s] -- Up-to-date: /workspace/ros2_ws/install/dffw/share/ament_index/resource_index/parent_prefix_path/dffw
+[0.543s] -- Up-to-date: /workspace/ros2_ws/install/dffw/share/dffw/environment/ament_prefix_path.sh
+[0.543s] -- Up-to-date: /workspace/ros2_ws/install/dffw/share/dffw/environment/ament_prefix_path.dsv
+[0.543s] -- Up-to-date: /workspace/ros2_ws/install/dffw/share/dffw/environment/path.sh
+[0.543s] -- Up-to-date: /workspace/ros2_ws/install/dffw/share/dffw/environment/path.dsv
+[0.544s] -- Up-to-date: /workspace/ros2_ws/install/dffw/share/dffw/local_setup.bash
+[0.544s] -- Up-to-date: /workspace/ros2_ws/install/dffw/share/dffw/local_setup.sh
+[0.544s] -- Up-to-date: /workspace/ros2_ws/install/dffw/share/dffw/local_setup.zsh
+[0.544s] -- Up-to-date: /workspace/ros2_ws/install/dffw/share/dffw/local_setup.dsv
+[0.544s] -- Up-to-date: /workspace/ros2_ws/install/dffw/share/dffw/package.dsv
+[0.545s] -- Up-to-date: /workspace/ros2_ws/install/dffw/share/ament_index/resource_index/packages/dffw
+[0.545s] -- Up-to-date: /workspace/ros2_ws/install/dffw/share/dffw/cmake/dffwConfig.cmake
+[0.545s] -- Up-to-date: /workspace/ros2_ws/install/dffw/share/dffw/cmake/dffwConfig-version.cmake
+[0.545s] -- Up-to-date: /workspace/ros2_ws/install/dffw/share/dffw/package.xml
+[0.561s] Invoked command in '/workspace/ros2_ws/build/dffw' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/local/bin/cmake --install /workspace/ros2_ws/build/dffw
