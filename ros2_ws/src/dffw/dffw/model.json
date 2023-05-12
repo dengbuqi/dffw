@@ -1,0 +1,10 @@
+{
+    "_layerexample":"[from, number, module, args]",
+    "in_channel": 784,
+    "model_name": "Digital_classifier",
+    "model":[
+        [-1, "Linear_dffw", [500]],
+        [-1, "Linear_dffw", [500]]
+    ]   
+
+}

@@ -49,3 +49,20 @@ qtcreator-*
 
 # Catkin custom files
 CATKIN_IGNORE
+
+# docker 
+.bashrc 
+/log
+/.ros
+/build
+/.nv
+.vscode
+/.cache
+/output
+/.bash_history
+/.config
+/install
+/ros2_ws/log
+/ros2_ws/build
+/ros2_ws/install
+

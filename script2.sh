@@ -5,4 +5,5 @@ docker build -f dffw.dockrefile -t dffw .
 
 docker run --name dffw_con --gpus all -d -it -v /home/deng/data/dffw:/root --gpus all --runtime=nvidia dffw # bash  --rm exit and remove
 
+docker restart dffw_con
 docker exec -it dffw_con bash

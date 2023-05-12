@@ -3,7 +3,7 @@ import torch.nn as nn
 from tqdm import tqdm
 from torch.optim import Adam
 
-class Layer(nn.Linear):
+class Linear_dffw(nn.Linear):
     def __init__(self, in_features, out_features,
                  bias=True, device=None, dtype=None):
         super().__init__(in_features, out_features, bias, device, dtype)

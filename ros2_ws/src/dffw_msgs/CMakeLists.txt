@@ -13,6 +13,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/PytorchTensorFloat32.msg"
   "msg/TrainForward.msg"
   "msg/InferanceForward.msg"
+  "srv/Str.srv"
 )
 
 

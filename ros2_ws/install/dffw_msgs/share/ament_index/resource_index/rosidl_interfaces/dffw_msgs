@@ -4,3 +4,7 @@ msg/PytorchTensorFloat32.idl
 msg/PytorchTensorFloat32.msg
 msg/TrainForward.idl
 msg/TrainForward.msg
+srv/Str.idl
+srv/Str.srv
+srv/Str_Request.msg
+srv/Str_Response.msg

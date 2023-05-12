@@ -1,0 +1,16 @@
+{
+    "Linear_dffw":{
+        "trainInp": {
+            "x": "TrainForward"
+        },
+        "trainOut": {
+            "y": "TrainForward"
+        },
+        "inferenceInp": {
+            "x": "InferanceForward"
+        },
+        "inferenceOut": {
+            "y": "InferanceForward"
+        }
+    }
+}

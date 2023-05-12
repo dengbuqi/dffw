@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 import rclpy
 from dffw.ff import LayerRunner
-from dffw.common import Layer
+from dffw.common import *
 
 
 def main():
     rclpy.init()
-    layer = Layer(500, 500) # [784, 500, 500]
-    layerrunner = LayerRunner(layer, 1)
+    nodeid = 0
+    node = rclpy.create_node(f'server_{nodeid}')
+    layer = Linear_dffw(500, 500) # [784, 500, 500]
+    layerrunner = LayerRunner(node, layer, nodeid)
 
     layerrunner.run()
 

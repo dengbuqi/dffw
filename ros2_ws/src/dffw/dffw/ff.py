@@ -1,71 +1,14 @@
-from dffw_msgs.msg import TrainForward, InferanceForward
-from dffw.dataconvert import TFmsg2tensor, TFtensor2msg, IFmsg2tensor, IFtensor2msg
+from dffw_msgs.msg import *
+from dffw.dataconvert import *
+from dffw.common import *
 import rclpy
 import torch
+
 from torchvision.datasets import MNIST
 from torchvision.transforms import Compose, ToTensor, Normalize, Lambda
 from torch.utils.data import DataLoader
 
-class LayerRunner(object):
-    def __init__(self, layer, 
-                       nodeid=0,
-                       num_epochs=1000,
-                       is_cuda=True):
-        self.node = rclpy.create_node(f'layer_{nodeid}')
-        self.Tsub = self.node.create_subscription(
-                                            TrainForward,
-                                            f'train_ff_{nodeid}',
-                                            self.traincallback,
-                                            10)
-        
-        self.Tpub = self.node.create_publisher(
-                                            TrainForward, 
-                                            f'train_ff_{nodeid+1}', 
-                                            10)
-        self.Fsub = self.node.create_subscription(
-                                            InferanceForward,
-                                            f'forward_ff_{nodeid}',
-                                            self.forwardcallback,
-                                            10)
-        
-        self.Fpub = self.node.create_publisher(
-                                            InferanceForward, 
-                                            f'forward_ff_{nodeid+1}', 
-                                            10)
-        self.layer = layer
-        if is_cuda:
-            self.layer = self.layer.cuda()
-        self.num_epochs = num_epochs
-        self.is_cuda = is_cuda
-
-    def traincallback(self, msg):
-        h_pos, h_neg = TFmsg2tensor(msg)
-        if self.is_cuda:
-            h_pos = h_pos.cuda()
-            h_neg = h_neg.cuda()
-        h_pos, h_neg = self.layer.train(h_pos, h_neg, self.num_epochs)
-        msg = TrainForward()
-        msg = TFtensor2msg(h_pos, h_neg)
-        self.Tpub.publish(msg)
-    
-    def forwardcallback(self, msg):
-        h,_ = IFmsg2tensor(msg)
-        if self.is_cuda:
-            h = h.cuda()
-        h = self.layer.forward(h)
-        goodness = h.pow(2).mean(1)
-        if self.is_cuda:
-            h = h.cpu()
-            goodness = goodness.cpu()
-        msg = InferanceForward()
-        msg =  IFtensor2msg(h, goodness)
-        self.Fpub.publish(msg)
-
-    def run(self):
-        rclpy.spin(self.node)
-    
-    def destroy(self):
-        self.node.destroy_node()
+import matplotlib.pyplot as plt
 
 def MNIST_loaders(train_batch_size=50000, test_batch_size=10000):
 
@@ -75,19 +18,21 @@ def MNIST_loaders(train_batch_size=50000, test_batch_size=10000):
         Lambda(lambda x: torch.flatten(x))])
 
     train_loader = DataLoader(
-        MNIST('/workspace/data/', train=True,
+              MNIST('/workspace/data/', train=True,
               download=True,
               transform=transform),
-        batch_size=train_batch_size, shuffle=True)
+              batch_size=train_batch_size, 
+              shuffle=True)
 
     test_loader = DataLoader(
-        MNIST('/workspace/data/', train=False,
+              MNIST('/workspace/data/', 
+              train=False,
               download=True,
               transform=transform),
-        batch_size=test_batch_size, shuffle=False)
+              batch_size=test_batch_size, 
+              shuffle=False)
 
     return train_loader, test_loader
-
 
 def overlay_y_on_x(x, y):
     """Replace the first 10 pixels of data [x] with one-hot-encoded label [y]
@@ -97,9 +42,19 @@ def overlay_y_on_x(x, y):
     x_[range(x.shape[0]), y] = x.max()
     return x_
 
+def save_visualize_sample(i, data, gt,name='', path='/root/output'):
+    reshaped = data.reshape(28, 28)
+    gt = gt.item()
+    plt.figure(figsize = (4, 4))
+    plt.title(f'GT:{gt} | Prediction:{name}')
+    plt.imshow(reshaped, cmap="gray")
+    plt.savefig(f'{path}/{i}.png')
+    plt.close()
 class MasterRunner(object):
-    def __init__(self):
+    def __init__(self, node, model_layers):
         torch.manual_seed(1234)
+        self.node = node
+        self.model_layers = model_layers
         train_loader, test_loader = MNIST_loaders()
         self.x, self.y = next(iter(train_loader))
         self.x_pos = overlay_y_on_x(self.x, self.y)
@@ -107,40 +62,34 @@ class MasterRunner(object):
         self.x_neg = overlay_y_on_x(self.x, self.y[rnd])
         self.x_te, self.y_te = next(iter(test_loader))
 
-
-        self.node = rclpy.create_node(f'master')
+        self.Tpub = self.node.create_publisher(
+                                            eval(self.model_layers[0]['trainInp']['type'][0]), 
+                                            self.model_layers[0]['trainInp']['name'][0], 
+                                            10)
         self.Tsub = self.node.create_subscription(
-                                            TrainForward,
-                                            f'train_ff_2',
+                                            eval(self.model_layers[-1]['trainOut']['type'][0]), 
+                                            self.model_layers[-1]['trainOut']['name'][0],
                                             self.traincallback,
                                             10)
         
-        self.Tpub = self.node.create_publisher(
-                                            TrainForward, 
-                                            f'train_ff_0', 
-                                            10)
-        
         self.Fpub = self.node.create_publisher(
-                                            InferanceForward, 
-                                            f'forward_ff_0', 
+                                            eval(self.model_layers[0]['inferenceInp']['type'][0]), 
+                                            self.model_layers[0]['inferenceInp']['name'][0], 
                                             10)
-
-
-        self.Fsub1 = self.node.create_subscription(
-                                            InferanceForward,
-                                            f'forward_ff_1',
+        print(self.model_layers[0]['trainInp']['name'][0])
+        print(self.model_layers[-1]['trainOut']['name'][0])
+        print(self.model_layers[0]['inferenceInp']['name'][0])
+        self.Fsub = []
+        for ml in self.model_layers:
+            print(ml['inferenceOut']['name'][0])
+            self.Fsub.append(
+                        self.node.create_subscription(
+                                            eval(ml['inferenceOut']['type'][0]), 
+                                            ml['inferenceOut']['name'][0],
                                             self.forwardcallback,
                                             10)
-        
- 
-        self.Fsub2 = self.node.create_subscription(
-                                            InferanceForward,
-                                            f'forward_ff_2',
-                                            self.forwardcallback,
-                                            10)
-        
+        )
         self.train_time = 0
-
         self.goodness = []
         self.goodness_per_label = []
         self.runlabel = True
@@ -154,12 +103,11 @@ class MasterRunner(object):
     def forwardcallback(self, msg):
         _,good = IFmsg2tensor(msg)
         self.goodness.append(good)
-        if len(self.goodness) == 2:
+        if len(self.goodness) == len(self.Fsub):
             self.goodness_per_label += [sum(self.goodness).unsqueeze(1)]
             self.goodness = []
             self.runlabel = False
 
-    
     def train(self, x_pos, x_neg):
         self.runlabel = True
         msg = TrainForward()
@@ -189,14 +137,10 @@ class MasterRunner(object):
         print('Train model starting!')
         self.train(self.x_pos, self.x_neg)
 
-        # print('Predict train data starting!')
-        # print(f'train error:', 1.0 - self.predict(self.x).eq(self.y).float().mean().item())
-        # self.goodness_per_label = None
-
         print('Predict text data starting!')
-        print(f'test error:', 1.0 - self.predict(self.x_te).eq(self.y_te).float().mean().item())
+        result = self.predict(self.x_te)
+        print(f'test error:', 1.0 - result.eq(self.y_te).float().mean().item())
         self.goodness_per_label = None
+        for i in range(100):
+            save_visualize_sample(i, self.x_te[i], self.y_te[i], result[i])
 
-
-    def destroy(self):
-        self.node.destroy_node()
