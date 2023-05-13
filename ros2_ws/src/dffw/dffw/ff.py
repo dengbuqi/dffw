@@ -76,12 +76,9 @@ class MasterRunner(object):
                                             eval(self.model_layers[0]['inferenceInp']['type'][0]), 
                                             self.model_layers[0]['inferenceInp']['name'][0], 
                                             10)
-        print(self.model_layers[0]['trainInp']['name'][0])
-        print(self.model_layers[-1]['trainOut']['name'][0])
-        print(self.model_layers[0]['inferenceInp']['name'][0])
         self.Fsub = []
         for ml in self.model_layers:
-            print(ml['inferenceOut']['name'][0])
+            self.node.get_logger().info(ml['inferenceOut']['name'][0])
             self.Fsub.append(
                         self.node.create_subscription(
                                             eval(ml['inferenceOut']['type'][0]), 
@@ -97,7 +94,7 @@ class MasterRunner(object):
     def traincallback(self, msg):
         # h_pos, h_neg = TFmsg2tensor(msg)
         self.train_time += 1
-        print(f'Train {self.train_time} times!')
+        self.node.get_logger().info(f'Train {self.train_time} times!')
         self.runlabel = False
     
     def forwardcallback(self, msg):
@@ -126,7 +123,7 @@ class MasterRunner(object):
 
     def predict(self, x):
         for label in range(10):
-            print('generate', label)
+            self.node.get_logger().info(f'generate {label}')
             h = overlay_y_on_x(x, label)
             self.predict_once(h)
         self.goodness_per_label = torch.cat(self.goodness_per_label, 1)
@@ -134,12 +131,11 @@ class MasterRunner(object):
     
     def run(self):
         # train model
-        print('Train model starting!')
-        self.train(self.x_pos, self.x_neg)
-
-        print('Predict text data starting!')
+        # self.node.get_logger().info('Train model starting!')
+        # self.train(self.x_pos, self.x_neg)
+        self.node.get_logger().info('Predict text data starting!')
         result = self.predict(self.x_te)
-        print(f'test error:', 1.0 - result.eq(self.y_te).float().mean().item())
+        self.node.get_logger().info(f'test error: {1.0 - result.eq(self.y_te).float().mean().item()}')
         self.goodness_per_label = None
         for i in range(100):
             save_visualize_sample(i, self.x_te[i], self.y_te[i], result[i])

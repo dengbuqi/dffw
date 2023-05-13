@@ -4,9 +4,10 @@ from dffw.dataconvert import *
 from dffw.common import *
 import json
 from rclpy.node import Node
+import os
 
 SERVER_NAME = 'server_'
-
+MODEL_WEIGHT_ROOT_PATH = '/root/weight'
 def create_layer(layer_info):
     args = layer_info['args']
     module = layer_info['module']
@@ -20,9 +21,15 @@ class LayerRunner(object):
                        is_cuda=True):
         self.node = node
         self.layer_info = json.loads(layer_info)
+        self.save_path = f"{MODEL_WEIGHT_ROOT_PATH}/{self.layer_info['model_name']}/{self.layer_info['layer_id']}/{self.layer_info['module']}.pth"
         self.layer = create_layer(self.layer_info)
         if is_cuda:
             self.layer = self.layer.cuda()
+        if os.path.exists(self.save_path):
+            self.layer.load_state_dict(torch.load(self.save_path))
+        else:
+            if not os.path.isdir(os.path.dirname(self.save_path)):
+                os.makedirs(os.path.dirname(self.save_path))
         self.num_epochs = num_epochs
         self.is_cuda = is_cuda
 
@@ -56,6 +63,7 @@ class LayerRunner(object):
             h_pos = h_pos.cuda()
             h_neg = h_neg.cuda()
         h_pos, h_neg = self.layer.train(h_pos, h_neg, self.num_epochs)
+        torch.save(self.layer.state_dict(), self.save_path)
         msg = TrainForward()
         msg = TFtensor2msg(h_pos, h_neg) #TBD: change to a universal method
         self.Tpub.publish(msg)

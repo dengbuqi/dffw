@@ -17,7 +17,7 @@ def read_json(file_path):
             data = json.load(file)
             return data
         except Exception as e:
-            print(f"Error reading Json file: {e}")
+            self.get_logger().info(f"Error reading Json file: {e}")
 
 class ModelJson2Distribution(object):
     def __init__(self, layersInfo_json_path='layersInfo.json'):
@@ -79,6 +79,7 @@ class ModelJson2Distribution(object):
                 in_out[k]['type'] = tp
             m_d = {
                 'model_name': model_json['model_name'],
+                'layer_id': idx,
                 'from_inp': from_inp, 
                 'module': module, 
                 'args':args
@@ -86,7 +87,7 @@ class ModelJson2Distribution(object):
             model_distribute.append({**m_d, **in_out})
 
         # for m in model_distribute:
-        #     print(m)
+        #     self.get_logger().info(m)
         return model_distribute
         
 
@@ -115,19 +116,16 @@ class MasterNode(Node):
         if future.result() is not None:
             response = future.result()
             msg = response.msg
-            print('Msg:', msg.split('|')[0])
+            self.get_logger().info('Msg: '+msg.split('|')[0])
         else:
-            print('Service call failed')
+            self.get_logger().info('Service call failed')
 
     def distribute_model(self, model_json_path):
         self.model_layers = self.mj2dis.read_model(model_json_path)
         self.server_list = get_server(self.get_node_names()) # update node number 
-        if len(self.model_layers) <= len(self.server_list): # TBD: better distribution strategy
-            for idx, layer_info in enumerate(self.model_layers):
-                self._send_layer(self.server_list[idx], json.dumps(layer_info))
-        else:
-            self.get_logger().info('Model distribution failed!')
-
+        mod = len(self.server_list)
+        for idx, layer_info in enumerate(self.model_layers):  #TBD: better distribution strategy
+            self._send_layer(self.server_list[idx%mod], json.dumps(layer_info))
         self.runner = MasterRunner(self, self.model_layers)
 
     def run(self):

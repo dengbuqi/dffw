@@ -65,4 +65,4 @@ CATKIN_IGNORE
 /ros2_ws/log
 /ros2_ws/build
 /ros2_ws/install
-
+/weight
