@@ -1,6 +1,10 @@
 {
-    "_layerexample":"[from, number, module, args]",
+    "_layerexample":"[from, module, args]",
     "in_channel": 784,
+    "goodness_layers":[0,1],
+    "labels": ["0","1","2","3","4","5","6","7","8","9"],
+    "dataset": "MNIST",
+    "goodness_layers":[0,1],
     "model_name": "Digital_classifier",
     "model":[
         [-1, "Linear_dffw", [500]],

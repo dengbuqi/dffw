@@ -66,3 +66,4 @@ CATKIN_IGNORE
 /ros2_ws/build
 /ros2_ws/install
 /weight
+.python_history

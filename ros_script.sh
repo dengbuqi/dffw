@@ -11,3 +11,6 @@ colcon build --packages-select dffw_msgs
 ros2 run dffw service_node0.py
 ros2 run dffw service_node1.py
 ros2 run dffw master_node.py
+
+ros2 run dffw master_node.py --model_json /root/ros2_ws/src/dffw/dffw/model2.json --batch_size 1000 --train_type epoches_shot --epochs 2
+ros2 run dffw service_node0.py --is_cuda

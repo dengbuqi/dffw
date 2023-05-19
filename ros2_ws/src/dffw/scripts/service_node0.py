@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 import rclpy
 from dffw.server import LayerRunner, ServerNode
+import argparse
 
 SERVER_NAME = 'server_'
 
-def main():
+def main(parser):
     rclpy.init()
     nodeid = -1
     nodeName = 'temp'
@@ -21,7 +22,7 @@ def main():
 
     nodeName = SERVER_NAME+str(nodeid)
     # node = rclpy.create_node(nodeName)
-    node = ServerNode(nodeName)
+    node = ServerNode(nodeName, is_cuda=parser.is_cuda)
     
     rclpy.spin(node)
 
@@ -35,4 +36,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description='Distributed Forward-Forward Algorithm Server')
+    parser.add_argument("-g", "--is_cuda", action='store_true',
+                        default=False)
+    main(parser.parse_args())

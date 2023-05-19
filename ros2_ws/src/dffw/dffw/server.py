@@ -17,7 +17,6 @@ def create_layer(layer_info):
 class LayerRunner(object):
     def __init__(self, node,
                        layer_info, 
-                       num_epochs=1000,
                        is_cuda=True):
         self.node = node
         self.layer_info = json.loads(layer_info)
@@ -25,14 +24,16 @@ class LayerRunner(object):
         self.layer = create_layer(self.layer_info)
         if is_cuda:
             self.layer = self.layer.cuda()
+        
         if os.path.exists(self.save_path):
             self.layer.load_state_dict(torch.load(self.save_path))
         else:
             if not os.path.isdir(os.path.dirname(self.save_path)):
                 os.makedirs(os.path.dirname(self.save_path))
-        self.num_epochs = num_epochs
-        self.is_cuda = is_cuda
 
+        self.epochs = self.layer_info['epochs']
+        self.train_type = self.layer_info['train_type']
+        self.is_cuda = is_cuda
         self.Tsub = self.node.create_subscription(
                                             eval(self.layer_info['trainInp']['type'][0]),
                                             self.layer_info['trainInp']['name'][0],
@@ -62,17 +63,18 @@ class LayerRunner(object):
         if self.is_cuda:
             h_pos = h_pos.cuda()
             h_neg = h_neg.cuda()
-        h_pos, h_neg = self.layer.train(h_pos, h_neg, self.num_epochs)
-        torch.save(self.layer.state_dict(), self.save_path)
+        h_pos, h_neg = self.layer.train_ff(h_pos, h_neg, 
+                                           self.epochs, self.train_type)
         msg = TrainForward()
         msg = TFtensor2msg(h_pos, h_neg) #TBD: change to a universal method
         self.Tpub.publish(msg)
+        self.save()
     
     def forwardcallback(self, msg):
         h,_ = IFmsg2tensor(msg) #TBD: change to a universal method
         if self.is_cuda:
             h = h.cuda()
-        h = self.layer.forward(h)
+        h = self.layer.forward_ff(h)
         goodness = h.pow(2).mean(1)
         if self.is_cuda:
             h = h.cpu()
@@ -81,11 +83,10 @@ class LayerRunner(object):
         msg =  IFtensor2msg(h, goodness) #TBD: change to a universal method
         self.Fpub.publish(msg)
 
-    # def run(self):
-    #     rclpy.spin(self.node)
+
     def save(self):
-        pass
-        # save weight to master
+        torch.save(self.layer.state_dict(), self.save_path)
+        # save weight to local TBD: to master
 
     def destroy(self):
         self.node.destroy_subscription(self.Tsub)
@@ -95,10 +96,10 @@ class LayerRunner(object):
         del self.layer
 
 class ServerNode(Node):
-    def __init__(self, server_name=SERVER_NAME):
+    def __init__(self, server_name=SERVER_NAME, is_cuda = False):
         super().__init__(server_name)
         self.layer_runners = []
-
+        self.is_cuda = is_cuda
         self.create_sevice = self.create_service(
             Str,  
             f'{self.get_name()}/create_layer',  
@@ -115,18 +116,20 @@ class ServerNode(Node):
         self.get_logger().info('create_service_callback called!')
         response.msg = f'failed|'
         if request.msg:
-            try:
-                layer_info = request.msg
-                layer_runner = LayerRunner(self, 
-                                        layer_info)
-                self.layer_runners.append({'model_name':layer_runner.model_name(),
-                                        'layer_runner': layer_runner})
-                response.msg = f'success|{layer_info}'
-                self.get_logger().info(f'{layer_runner.layer_info["model_name"]}/{layer_runner.layer_info["module"]}/{layer_runner.layer_info["args"]} created!')
-                return response
-            except Exception as e:
-                response.msg = f'fail|{layer_info}|{e}'
-                return response
+            # try:
+            layer_info = request.msg
+            layer_runner = LayerRunner(self, 
+                                    layer_info,
+                                    self.is_cuda
+                                    )
+            self.layer_runners.append({'model_name':layer_runner.model_name(),
+                                    'layer_runner': layer_runner})
+            response.msg = f'success|{layer_info}'
+            self.get_logger().info(f'{layer_runner.layer_info["model_name"]}/{layer_runner.layer_info["module"]}/{layer_runner.layer_info["args"]} created!')
+            return response
+            # except Exception as e:
+            #     response.msg = f'fail|{layer_info}|{e}'
+            #     return response
         
 
     def delete_service_callback(self, request, response):

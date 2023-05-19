@@ -12,5 +12,33 @@
         "inferenceOut": {
             "y": "InferanceForward"
         }
+    },
+    "Conv2d_dffw":{
+        "trainInp": {
+            "x": "TrainForward"
+        },
+        "trainOut": {
+            "y": "TrainForward"
+        },
+        "inferenceInp": {
+            "x": "InferanceForward"
+        },
+        "inferenceOut": {
+            "y": "InferanceForward"
+        }
+    },
+    "Flatton_dffw":{
+        "trainInp": {
+            "x": "TrainForward"
+        },
+        "trainOut": {
+            "y": "TrainForward"
+        },
+        "inferenceInp": {
+            "x": "InferanceForward"
+        },
+        "inferenceOut": {
+            "y": "InferanceForward"
+        }
     }
 }
