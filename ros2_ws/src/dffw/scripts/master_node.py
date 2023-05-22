@@ -39,5 +39,4 @@ if __name__ == '__main__':
     parser.add_argument("-b", "--batch_size", type=int, 
                         default=-1)
 
-
     main(parser.parse_args())

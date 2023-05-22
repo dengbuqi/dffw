@@ -63,6 +63,7 @@ class LayerRunner(object):
         if self.is_cuda:
             h_pos = h_pos.cuda()
             h_neg = h_neg.cuda()
+        self.layer.train()
         h_pos, h_neg = self.layer.train_ff(h_pos, h_neg, 
                                            self.epochs, self.train_type)
         msg = TrainForward()
@@ -74,6 +75,7 @@ class LayerRunner(object):
         h,_ = IFmsg2tensor(msg) #TBD: change to a universal method
         if self.is_cuda:
             h = h.cuda()
+        self.layer.eval()
         h = self.layer.forward_ff(h)
         goodness = h.pow(2).mean(1)
         if self.is_cuda:

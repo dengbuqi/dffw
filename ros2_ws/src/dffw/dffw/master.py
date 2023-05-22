@@ -19,44 +19,49 @@ def read_json(file_path):
         except Exception as e:
             self.get_logger().info(f"Error reading Json file: {e}")
 
+def rebuit_model(model_json,in_ch):
+    idx = 0
+    model_rebuilt = []
+    for m in model_json:
+        from_inp, module, args = m
+        if not isinstance(from_inp, list):
+            if from_inp == -1:
+                from_inp = idx-1
+                if from_inp == -1:
+                    args_new = [in_ch]+args
+                else:
+                    args_new = [model_rebuilt[from_inp][2][1]]+args
+                model_rebuilt.append([from_inp, module, args_new])
+                idx +=1
+            else:
+                args_new = [model_rebuilt[from_inp][2][1]]+args
+                model_rebuilt.append([from_inp, module, args_new])
+                idx +=1
+        else:
+            c = []
+            for f_i in from_inp:
+                c.append(model_rebuilt[f_i][2][1])
+            args_new = args+[c]
+            model_rebuilt.append([from_inp, module, args_new])
+    return model_rebuilt
 class ModelJson2Distribution(object):
     def __init__(self, layersInfo_json_path='layersInfo.json'):
         self.layersInfo = read_json(layersInfo_json_path)
         self.nodes = []
         self.model_json = None
+        self.model_rebuilt = []
+        self.model_distribute = []
+        self.local_model = []
 
     def read_model(self, model_json_path='model.json'):
-        model_json = read_json(model_json_path)
-        model_rebuilt = []
-        model_distribute = []
-        idx = 0
-        in_ch = model_json["in_channel"]
-        model_name = model_json["model_name"]
-        goodness_layers = model_json["goodness_layers"]
+        self.model_json = read_json(model_json_path)
+        model_name = self.model_json["model_name"]
+        goodness_layers = self.model_json["goodness_layers"]
         
-        for m in model_json["model"]:
-            from_inp, module, args = m
-            if not isinstance(from_inp, list):
-                if from_inp == -1:
-                    from_inp = idx-1
-                    if from_inp == -1:
-                        args_new = [in_ch]+args
-                    else:
-                        args_new = [model_rebuilt[from_inp][2][1]]+args
-                    model_rebuilt.append([from_inp, module, args_new])
-                    idx +=1
-                else:
-                    args_new = [model_rebuilt[from_inp][2][1]]+args
-                    model_rebuilt.append([from_inp, module, args_new])
-                    idx +=1
-            else:
-                c = []
-                for f_i in from_inp:
-                    c.append(model_rebuilt[f_i][2][1])
-                args_new = args+[c]
-                model_rebuilt.append([from_inp, module, args_new])
-
-        for idx, m in enumerate(model_rebuilt): 
+        if self.model_json['supervised'] != 'True':
+            self.local_model = rebuit_model(self.model_json["local"], self.model_json["local_in_channel"])
+        self.model_rebuilt = rebuit_model(self.model_json["model"], self.model_json["in_channel"])
+        for idx, m in enumerate(self.model_rebuilt): 
             from_inp, module, args = m
             if from_inp == -1: # To avoid sub/pub name problem, no '-'
                 from_inp = 'in'
@@ -80,22 +85,25 @@ class ModelJson2Distribution(object):
                 in_out[k]['name'] = name
                 in_out[k]['type'] = tp
             m_d = {
-                'model_name': model_json['model_name'],
+                'model_name': self.model_json['model_name'],
                 'layer_id': idx,
                 'goodness': True if idx in goodness_layers else False,
                 'from_inp': from_inp, 
                 'module': module, 
                 'args':args
             }
-            model_distribute.append({**m_d, **in_out})
-        # for m in model_distribute:
-        #     self.get_logger().info(m)
-        self.model_json = model_json
-        return model_distribute
-        
+            self.model_distribute.append({**m_d, **in_out})
 
+        return self.model_distribute
+        
 def get_server(all_server_list, server_key_word=SERVER_NAME):
     return [sn for sn in all_server_list  if server_key_word in sn]
+
+
+def split(a, n):
+    # Splitting a list into N parts of approximately equal length
+    k, m = divmod(len(a), n)
+    return (a[i*k+min(i, m):(i+1)*k+min(i+1, m)] for i in range(n))
 
 class MasterNode(Node):
     def __init__(self, master_name='Master', layer_infor_json_path='layersInfo.json'):
@@ -130,7 +138,7 @@ class MasterNode(Node):
                          train_type='one_shot',  
                          batch_size=-1):
         '''
-            train_type = 'one_shot' | 'epochs_shot'
+            train_type = 'one_shot' | 'epochs_shot | batch_shot'
         '''
         self.model_layers = self.mj2dis.read_model(model_json_path)
         self.dataset = self.mj2dis.model_json['dataset']
@@ -139,14 +147,18 @@ class MasterNode(Node):
         if train_type == 'one_shot':
             ep = {'train_type':train_type,
                   'epochs': epochs}
+        elif train_type == 'batch_shot':
+            ep = {'train_type':train_type,
+                  'epochs': epochs}
         else:
             ep = {'train_type':train_type,
                   'epochs': 1}
-
-        for idx, layer_info in enumerate(self.model_layers):  #TBD: better distribution strategy
-            layer_info = {**ep, **layer_info}
-            self._send_layer(self.server_list[idx%mod], json.dumps(layer_info))
         
+        split_model_layer = split(self.model_layers, mod)
+        for idx, m_l in enumerate(split_model_layer):
+            for l_idx, layer_info in enumerate(m_l):  #TBD: better distribution strategy
+                layer_info = {**ep, **layer_info}
+                self._send_layer(self.server_list[idx], json.dumps(layer_info))
         self.runner = MasterRunner(self, 
                                    self.model_layers, 
                                    self.dataset, 

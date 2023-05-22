@@ -21,7 +21,7 @@ class Linear_dffw(nn.Linear):
             self.bias.unsqueeze(0))
 
     def train_ff(self, x_pos, x_neg, epochs, train_type='one_shot'):
-        if train_type == 'one_shot':
+        if train_type == 'one_shot' or train_type == 'batch_shot':
             tbar = tqdm(range(epochs))
         else:
             tbar = range(epochs)
@@ -38,8 +38,10 @@ class Linear_dffw(nn.Linear):
             # this backward just compute the derivative and hence
             # is not considered backpropagation.
             loss.backward()
-            if train_type == 'one_shot':
+            if train_type == 'one_shot' or train_type == 'batch_shot':
                 tbar.set_postfix_str(f'loss={loss.item():.4f}')
+            else:
+                print(f'loss={loss.item():.4f}')
             self.opt.step()
         return self.forward_ff(x_pos).detach(), self.forward_ff(x_neg).detach()
     
@@ -60,7 +62,7 @@ class Conv2d_dffw(nn.Conv2d):
     ) -> None:
         super().__init__(in_channels, out_channels, kernel_size, stride, padding, dilation, groups, bias, padding_mode, device, dtype)
         self.relu = torch.nn.ReLU()
-        self.opt = Adam(self.parameters(), lr=0.03)
+        self.opt = Adam(self.parameters(), lr=0.001)
         self.threshold = 2.0
         self.pool = nn.MaxPool2d(2, 2)
         # self.epochs = 1000
@@ -69,13 +71,13 @@ class Conv2d_dffw(nn.Conv2d):
         return self.pool(self.relu(self.forward(x)))
 
     def train_ff(self, x_pos, x_neg, epochs, train_type='one_shot'):
-        if train_type == 'one_shot':
+        if train_type == 'one_shot' or train_type == 'batch_shot':
             tbar = tqdm(range(epochs))
         else:
             tbar = range(epochs)
         for i in tbar:
-            g_pos = self.forward_ff(x_pos).pow(2).mean(1)
-            g_neg = self.forward_ff(x_neg).pow(2).mean(1)
+            g_pos = self.forward_ff(x_pos).pow(2).mean([1,2,3])
+            g_neg = self.forward_ff(x_neg).pow(2).mean([1,2,3])
             # The following loss pushes pos (neg) samples to
             # values larger (smaller) than the self.threshold.
             loss = torch.log(1 + torch.exp(torch.cat([
@@ -85,10 +87,12 @@ class Conv2d_dffw(nn.Conv2d):
             # this backward just compute the derivative and hence
             # is not considered backpropagation.
             loss.backward()
-            if train_type == 'one_shot':
+            if train_type == 'one_shot' or train_type == 'batch_shot':
                 tbar.set_postfix_str(f'loss={loss.item():.4f}')
+            else:
+                print(f'loss={loss.item():.4f}')
             self.opt.step()
-            return self.forward_ff(x_pos).detach(), self.forward_ff(x_neg).detach()
+        return self.forward_ff(x_pos).detach(), self.forward_ff(x_neg).detach()
         
 class Flatton_dffw(nn.Module):
     def __init__(self, in_channel, out_channel, start_dim=0, end_dim=- 1):
@@ -105,4 +109,8 @@ class Flatton_dffw(nn.Module):
     def train_ff(self, x_pos, x_neg, epochs, train_type='one_shot'):
         return self.forward_ff(x_pos), self.forward_ff(x_neg)
         
+    def forward(self, x):
+        return torch.flatten(x, 
+                             start_dim = self.start_dim, 
+                             end_dim = self.end_dim)
         

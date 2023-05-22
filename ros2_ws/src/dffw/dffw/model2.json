@@ -1,16 +1,20 @@
 {
     "_layerexample":"[from, module, args]",
     "in_channel": 3,
+    "local_in_channel": 400,
     "goodness_layers":[3,4,5],
     "labels": ["plane", "car", "bird", "cat", "deer", "dog", "frog", "horse", "ship", "truck"],
     "dataset": "CIFAR10",
+    "supervised":"False",
     "model_name": "CIFAR10_classifier",
     "model":[
         [-1, "Conv2d_dffw", [6, 5]],
-        [-1, "Conv2d_dffw", [16, 5]],
+        [-1, "Conv2d_dffw", [16, 5]]
+    ],
+    "local":[
         [-1, "Flatton_dffw", [400, 1]],
-        [-1, "Linear_dffw", [120]],
-        [-1, "Linear_dffw", [84]],
-        [-1, "Linear_dffw", [10]]
-    ]   
+        [-1, "Linear", [400]],
+        [-1, "Linear", [200]],
+        [-1, "Linear", [10]]
+    ]
 }
