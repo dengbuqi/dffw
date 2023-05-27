@@ -63,7 +63,11 @@ class Conv2d_dffw(nn.Conv2d):
         dtype=None
     ) -> None:
         super().__init__(in_channels, out_channels, kernel_size, stride, padding, dilation, groups, bias, padding_mode, device, dtype)
+<<<<<<< HEAD
         self.act = torch.nn.ReLU()
+=======
+        self.relu = torch.nn.ReLU()
+>>>>>>> main
         self.opt = Adam(self.parameters(), lr=0.001)
         self.threshold = 2.0
         self.pool = nn.MaxPool2d(2, 2)
@@ -115,6 +119,7 @@ class Flatton_dffw(nn.Module):
         return torch.flatten(x, 
                              start_dim = self.start_dim, 
                              end_dim = self.end_dim)
+<<<<<<< HEAD
 
 
 
@@ -142,6 +147,8 @@ class SF(nn.Module):
 
     def train_ff(self, x_pos, x_neg, epochs, train_type='one_shot'):
         return self.softmax(x_pos), self.softmax(x_neg)
+=======
+>>>>>>> main
         
     def forward(self, x):
         return self.softmax(x)
