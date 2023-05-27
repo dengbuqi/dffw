@@ -17,23 +17,25 @@ def create_layer(layer_info):
 class LayerRunner(object):
     def __init__(self, node,
                        layer_info, 
-                       is_cuda=True):
+                       is_cuda=False,
+                       load_weight=False):
         self.node = node
         self.layer_info = json.loads(layer_info)
         self.save_path = f"{MODEL_WEIGHT_ROOT_PATH}/{self.layer_info['model_name']}/{self.layer_info['layer_id']}/{self.layer_info['module']}.pth"
         self.layer = create_layer(self.layer_info)
-        if is_cuda:
+        self.load_weight = load_weight
+        self.is_cuda = is_cuda
+        if self.is_cuda:
             self.layer = self.layer.cuda()
-        
         if os.path.exists(self.save_path):
-            self.layer.load_state_dict(torch.load(self.save_path))
+            if self.load_weight:
+                self.layer.load_state_dict(torch.load(self.save_path))
         else:
             if not os.path.isdir(os.path.dirname(self.save_path)):
                 os.makedirs(os.path.dirname(self.save_path))
 
         self.epochs = self.layer_info['epochs']
         self.train_type = self.layer_info['train_type']
-        self.is_cuda = is_cuda
         self.Tsub = self.node.create_subscription(
                                             eval(self.layer_info['trainInp']['type'][0]),
                                             self.layer_info['trainInp']['name'][0],
@@ -49,7 +51,6 @@ class LayerRunner(object):
                                             self.layer_info['inferenceInp']['name'][0],
                                             self.forwardcallback,
                                             10)
-        
         self.Fpub = self.node.create_publisher(
                                             eval(self.layer_info['inferenceOut']['type'][0]), 
                                             self.layer_info['inferenceOut']['name'][0],
@@ -63,6 +64,8 @@ class LayerRunner(object):
         if self.is_cuda:
             h_pos = h_pos.cuda()
             h_neg = h_neg.cuda()
+        self.layer.train()
+        print(self.train_type)
         h_pos, h_neg = self.layer.train_ff(h_pos, h_neg, 
                                            self.epochs, self.train_type)
         msg = TrainForward()
@@ -74,6 +77,7 @@ class LayerRunner(object):
         h,_ = IFmsg2tensor(msg) #TBD: change to a universal method
         if self.is_cuda:
             h = h.cuda()
+        self.layer.eval()
         h = self.layer.forward_ff(h)
         goodness = h.pow(2).mean(1)
         if self.is_cuda:
@@ -89,17 +93,24 @@ class LayerRunner(object):
         # save weight to local TBD: to master
 
     def destroy(self):
-        self.node.destroy_subscription(self.Tsub)
-        self.node.destroy_subscription(self.Fsub)
-        self.node.destroy_publisher(self.Tpub)
-        self.node.destroy_publisher(self.Fpub)
-        del self.layer
+        try:
+            self.node.destroy_subscription(self.Tsub)
+            self.node.destroy_subscription(self.Fsub)
+            self.node.destroy_publisher(self.Tpub)
+            self.node.destroy_publisher(self.Fpub)
+            del self.layer
+        except Exception as e:
+            print(e)
 
 class ServerNode(Node):
-    def __init__(self, server_name=SERVER_NAME, is_cuda = False):
+    def __init__(self, server_name=SERVER_NAME,
+                       is_cuda = False,
+                       load_weight = False
+                ):
         super().__init__(server_name)
         self.layer_runners = []
         self.is_cuda = is_cuda
+        self.load_weight = load_weight
         self.create_sevice = self.create_service(
             Str,  
             f'{self.get_name()}/create_layer',  
@@ -120,7 +131,8 @@ class ServerNode(Node):
             layer_info = request.msg
             layer_runner = LayerRunner(self, 
                                     layer_info,
-                                    self.is_cuda
+                                    self.is_cuda,
+                                    self.load_weight
                                     )
             self.layer_runners.append({'model_name':layer_runner.model_name(),
                                     'layer_runner': layer_runner})
@@ -142,9 +154,12 @@ class ServerNode(Node):
                     if delete_model_name == l['model_name']:
                         runner = l['layer_runner']
                         runner.destroy()
+                        self.layer_runners.remove(l)
                 response.msg = f'success|{delete_model_name}'
+                self.get_logger().info(f'{delete_model_name} deleted!')
                 return response
             except Exception as e:
                 response.msg = f'failed|{delete_model_name}|e'
+                self.get_logger().info(f'{delete_model_name} delete failed!')
                 return response
         

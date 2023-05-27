@@ -67,3 +67,7 @@ CATKIN_IGNORE
 /ros2_ws/install
 /weight
 .python_history
+
+.vscode-server/
+
+.wget-hsts

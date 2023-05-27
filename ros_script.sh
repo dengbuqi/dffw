@@ -12,5 +12,7 @@ ros2 run dffw service_node0.py
 ros2 run dffw service_node1.py
 ros2 run dffw master_node.py
 
-ros2 run dffw master_node.py --model_json /root/ros2_ws/src/dffw/dffw/model2.json --batch_size 1000 --train_type epoches_shot --epochs 2
+ros2 run dffw master_node.py --model_json /root/ros2_ws/src/dffw/dffw/model.json --batch_size 2000 --train_type one_shot --epochs 1000 --is_cuda
+
+ros2 run dffw master_node.py --model_json /root/ros2_ws/src/dffw/dffw/model2.json --batch_size 2000 --train_type one_shot --epochs 5000 --is_cuda
 ros2 run dffw service_node0.py --is_cuda

@@ -39,4 +39,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Distributed Forward-Forward Algorithm Server')
     parser.add_argument("-g", "--is_cuda", action='store_true',
                         default=False)
+    parser.add_argument("-l", "--load_weight", action='store_true',
+                        default=False)
     main(parser.parse_args())

@@ -8,13 +8,15 @@ def main(parser):
 
     rclpy.init()
 
-    node = MasterNode(layer_infor_json_path=parser.layer_json)
+    node = MasterNode(layer_infor_json_path=parser.layer_json,
+                      is_cuda=parser.is_cuda)
     node.distribute_model(parser.model_json, 
                           parser.epochs, 
                           parser.train_type,
                           parser.batch_size)
     node.run()
-    rclpy.spin(node)
+    node.destroy_model()
+    # rclpy.spin(node)
 
     node.get_logger().info('Shutting down...')
     node.destroy_node()
@@ -38,6 +40,6 @@ if __name__ == '__main__':
                         help='train_type = one_shot | epochs_shot')
     parser.add_argument("-b", "--batch_size", type=int, 
                         default=-1)
-
-
+    parser.add_argument("-g", "--is_cuda", action='store_true',
+                        default=False)
     main(parser.parse_args())
