@@ -65,10 +65,7 @@ class LayerRunner(object):
             h_pos = h_pos.cuda()
             h_neg = h_neg.cuda()
         self.layer.train()
-<<<<<<< HEAD
         print(self.train_type)
-=======
->>>>>>> main
         h_pos, h_neg = self.layer.train_ff(h_pos, h_neg, 
                                            self.epochs, self.train_type)
         msg = TrainForward()

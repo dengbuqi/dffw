@@ -40,10 +40,6 @@ if __name__ == '__main__':
                         help='train_type = one_shot | epochs_shot')
     parser.add_argument("-b", "--batch_size", type=int, 
                         default=-1)
-<<<<<<< HEAD
     parser.add_argument("-g", "--is_cuda", action='store_true',
                         default=False)
-=======
-
->>>>>>> main
     main(parser.parse_args())

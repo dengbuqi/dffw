@@ -93,11 +93,7 @@ class ModelJson2Distribution(object):
                 'args':args
             }
             self.model_distribute.append({**m_d, **in_out})
-<<<<<<< HEAD
         # print(self.model_distribute)
-=======
-
->>>>>>> main
         return self.model_distribute
         
 def get_server(all_server_list, server_key_word=SERVER_NAME):

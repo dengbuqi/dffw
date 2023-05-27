@@ -10,7 +10,6 @@ import os
 from torchvision.datasets import MNIST, CIFAR10
 from torchvision.transforms import Compose, ToTensor, Normalize, Lambda, ToPILImage
 from torch.utils.data import DataLoader
-<<<<<<< HEAD
 
 import torch.nn as nn 
 # from torch.nn import Linear
@@ -41,47 +40,15 @@ class ConcatDataset(torch.utils.data.Dataset):
     def __len__(self):
         return min(len(d) for d in self.datasets)
 
-=======
-from torch.nn import Linear 
-import matplotlib.pyplot as plt
-
-def create_supervised_train_data(train_dataset, dataset_name):
-    n_train_samples = len(train_dataset)
-    if not os.path.exists(f'/workspace/data/{dataset_name}.pt'):
-        random_pairs = np.random.randint(n_train_samples, size=[n_train_samples, 2])
-        random_pairs = [(row[0], row[1]) for row in random_pairs]
-        # Transform the data
-        print(f'Transform the <{dataset_name}> data')
-        transformed_dataset = [
-            create_negative_image(train_dataset[pair[0]][0].squeeze(), train_dataset[pair[1]][0].squeeze())
-            for pair in tqdm(random_pairs)]
-
-        # Save the transformed images to a folder
-        torch.save(transformed_dataset, f'/workspace/data/{dataset_name}.pt')
-
-class ConcatDataset(torch.utils.data.Dataset):
-    def __init__(self, *datasets):
-        self.datasets = datasets
-
-    def __getitem__(self, i):
-        return tuple(d[i] for d in self.datasets)
-
-    def __len__(self):
-        return min(len(d) for d in self.datasets)
-
->>>>>>> main
 def MNIST_loaders(train_batch_size=50000, test_batch_size=10000, supervised=True):
     transform = Compose([
             ToTensor(),
             Normalize((0.1307,), (0.3081,)),
             Lambda(lambda x: torch.flatten(x))])
-<<<<<<< HEAD
 
     to_t = Compose([ToTensor()])
     trans_f = Compose([Lambda(lambda x: torch.flatten(x))])
     
-=======
->>>>>>> main
     test_loader = DataLoader(
                 MNIST('/workspace/data/', 
                 train=False,
@@ -101,7 +68,6 @@ def MNIST_loaders(train_batch_size=50000, test_batch_size=10000, supervised=True
                             train=True, 
                             download=True, 
                             transform=transform)
-<<<<<<< HEAD
         to_d = MNIST('/workspace/data/', 
                             train=True, 
                             download=True, 
@@ -110,11 +76,6 @@ def MNIST_loaders(train_batch_size=50000, test_batch_size=10000, supervised=True
                                     'MNIST')
         neg_dataset = torch.load('/workspace/data/MNIST.pt')
         neg_dataset = [trans_f(neg) for neg in neg_dataset]
-=======
-        create_supervised_train_data(pos_dataset, 
-                                    'MNIST')
-        neg_dataset = torch.load('/workspace/data/MNIST.pt')
->>>>>>> main
         train_loader = DataLoader(
                         ConcatDataset(pos_dataset, neg_dataset),
                         batch_size=train_batch_size, 
@@ -124,7 +85,6 @@ def MNIST_loaders(train_batch_size=50000, test_batch_size=10000, supervised=True
 
 def CIFAR10_loaders(train_batch_size=50000, test_batch_size=10000, supervised=True):
     transform = Compose([
-<<<<<<< HEAD
         ToTensor(),
         Lambda(lambda x: torch.flatten(x))
         ])
@@ -132,9 +92,6 @@ def CIFAR10_loaders(train_batch_size=50000, test_batch_size=10000, supervised=Tr
     trans_f = Compose([
         Lambda(lambda x: torch.flatten(x))
         ])
-=======
-        ToTensor()])
->>>>>>> main
     test_loader = DataLoader(
                 CIFAR10('/workspace/data/', 
                 train=False,
@@ -155,7 +112,6 @@ def CIFAR10_loaders(train_batch_size=50000, test_batch_size=10000, supervised=Tr
                             train=True,
                             download=True,
                             transform=transform)
-<<<<<<< HEAD
         to_d = MNIST('/workspace/data/', 
                             train=True, 
                             download=True, 
@@ -164,11 +120,6 @@ def CIFAR10_loaders(train_batch_size=50000, test_batch_size=10000, supervised=Tr
                                     'CIFAR10')
         neg_dataset = torch.load('/workspace/data/CIFAR10.pt')
         neg_dataset = [trans_f(neg) for neg in neg_dataset]
-=======
-        create_supervised_train_data(pos_dataset, 
-                                    'CIFAR10')
-        neg_dataset = torch.load('/workspace/data/CIFAR10.pt')
->>>>>>> main
         train_loader = DataLoader(
                         ConcatDataset(pos_dataset, neg_dataset),
                         batch_size=train_batch_size, 
@@ -234,10 +185,7 @@ class MasterRunner(object):
         self.supervised = self.node.mj2dis.model_json['supervised'] == 'True'
         self.lable_num = len(self.node.mj2dis.model_json['labels'])
         self.is_cuda = is_cuda
-<<<<<<< HEAD
         self.data_set = data_set
-=======
->>>>>>> main
         if data_set == 'MNIST':
             # train_loader, test_loader = MNIST_loaders()
             Data_loaders = MNIST_loaders
@@ -307,27 +255,19 @@ class MasterRunner(object):
         self.train_time = 0
         if not self.supervised:
             # generate supervised lastlayer
-<<<<<<< HEAD
             self.save_path = f"{MODEL_WEIGHT_ROOT_PATH}/{self.node.mj2dis.model_json['model_name']}/local_model/local_model.pth"
-=======
->>>>>>> main
             layers = []
             for m in self.node.mj2dis.local_model:
                 from_inp, module, args = m
                 inp = ', '.join(map(str,args))
-<<<<<<< HEAD
                 if module in ['nn.Sigmoid', 'nn.ReLU']:
                     layers.append(eval(f'{module}()'))
                 else:
                     layers.append(eval(f'{module}({inp})'))
-=======
-                layers.append(eval(f'{module}({inp})'))
->>>>>>> main
             
             self.last_layer = nn.Sequential(*layers)
             if self.is_cuda:
                 self.last_layer.cuda()
-<<<<<<< HEAD
             if os.path.exists(self.save_path):
                 if False:
                     self.last_layer.load_state_dict(torch.load(self.save_path))
@@ -336,9 +276,6 @@ class MasterRunner(object):
                     os.makedirs(os.path.dirname(self.save_path))
             self.opt = torch.optim.Adam(self.last_layer.parameters(), lr=0.0001)
 
-=======
-            self.opt = torch.optim.Adam(self.last_layer.parameters(), lr=0.03)
->>>>>>> main
             self.loss_func = torch.nn.CrossEntropyLoss(reduction="mean")
             self.labels = None
             self.preds = None  
@@ -349,25 +286,6 @@ class MasterRunner(object):
             # h_pos, h_neg = TFmsg2tensor(msg)
             self.train_time += 1
             # self.node.get_logger().info(f'Train {self.train_time} times!')
-<<<<<<< HEAD
-=======
-            self.runlabel = False
-        else:
-            # train supervised lastlayer
-            h_pos, _ = TFmsg2tensor(msg)
-            if self.is_cuda:
-                h_pos.cuda()
-            self.last_layer.train()
-            preds = self.last_layer(h_pos)
-            loss = self.loss_func(preds, self.labels)
-            self.opt.zero_grad()
-            loss.backward()
-            self.loss_val = loss.item()
-            self.opt.step()
-            # h_pos, h_neg = TFmsg2tensor(msg)
-            self.train_time += 1
-            # self.node.get_logger().info(f'Train {self.train_time} times!')
->>>>>>> main
             self.runlabel = False
         else:
             # train unsupervised lastlayer
@@ -426,19 +344,6 @@ class MasterRunner(object):
                 self.goodness = []
                 self.runlabel = False
 
-    def forwardcallback(self, msg):
-        if self.supervised:
-            _,good = IFmsg2tensor(msg)
-            self.goodness.append(good)
-            if len(self.goodness) == len(self.Fsub):
-                self.goodness_per_label += [sum(self.goodness).unsqueeze(1)]
-                self.goodness = []
-                self.runlabel = False
-        else:
-            representation_ouputs,_ = IFmsg2tensor(msg)
-            self.last_layer.eval()
-            self.preds = self.last_layer(representation_ouputs)
-
     def train(self, x_pos, x_neg):
         self.runlabel = True
         msg = TrainForward()
@@ -468,7 +373,6 @@ class MasterRunner(object):
             for label in range(self.lable_num):
                 # self.node.get_logger().info(f'generate {label}')
                 h = overlay_y_on_x(x, label, self.lable_num)
-<<<<<<< HEAD
                 self.goodness = []
                 self.predict_once(h)
             self.goodness_per_label = torch.cat(self.goodness_per_label, 1)
@@ -485,15 +389,6 @@ class MasterRunner(object):
     def save(self):
         torch.save(self.last_layer.state_dict(), self.save_path)
         # save weight to local TBD: to master
-=======
-                self.predict_once(h)
-            self.goodness_per_label = torch.cat(self.goodness_per_label, 1)
-            return self.goodness_per_label.argmax(1)
-        else:
-            self.predict_once(x)
-            return self.preds
-
->>>>>>> main
     def run(self):
         # train model
         self.node.get_logger().info('Train model starting!')
@@ -501,12 +396,8 @@ class MasterRunner(object):
             if self.supervised:
                 self.train(self.x_pos, self.x_neg)
             else:
-<<<<<<< HEAD
                 self.labels = self.y
                 self.train(self.x_pos, self.x_neg)
-=======
-                self.train_unsupervised(self.x_pos, self.x_neg, self.y)
->>>>>>> main
         elif self.train_type=='batch_shot':
             tbar = tqdm(self.train_loader)
             tbar.set_description(f'Batch_shot')
@@ -519,10 +410,6 @@ class MasterRunner(object):
                     self.labels = y
                     self.train(x_pos, x_neg)
                     print(f'loss={self.loss_val}')
-<<<<<<< HEAD
-=======
-
->>>>>>> main
         else:
             for e in range(self.epochs):
                 tbar = tqdm(self.train_loader)
@@ -534,11 +421,7 @@ class MasterRunner(object):
                 else:
                     for (x_pos, y) , x_neg in tbar:
                         self.labels = y
-<<<<<<< HEAD
                         self.train(x_pos, x_neg)
-=======
-                        self.train(x_pos, x_neg, y)
->>>>>>> main
                         print(f'loss={self.loss_val}')
 
         self.node.get_logger().info('Predict test data starting!')
