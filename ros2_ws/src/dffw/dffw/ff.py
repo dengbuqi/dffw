@@ -112,7 +112,7 @@ def CIFAR10_loaders(train_batch_size=50000, test_batch_size=10000, supervised=Tr
                             train=True,
                             download=True,
                             transform=transform)
-        to_d = MNIST('/workspace/data/', 
+        to_d = CIFAR10('/workspace/data/', 
                             train=True, 
                             download=True, 
                             transform=to_t)
