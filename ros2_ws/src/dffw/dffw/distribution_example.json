@@ -1,0 +1,51 @@
+[
+    {
+        'model_name': 'Digital_classifier', 
+        'layer_id': 0, 
+        'goodness': True, 
+        'from_inp': 'in', 
+        'module': 'Linear_dffw', 
+        'args': [784, 500], 
+        'trainInp': {
+            'name': ['Digital_classifier/l_in/trainInp/x'], 
+            'type': ['TrainForward']
+            }, 
+        'trainOut': {
+            'name': ['Digital_classifier/l_0/trainOut/y'], 
+            'type': ['TrainForward']
+            }, 
+        'inferenceInp': {
+            'name': ['Digital_classifier/l_in/inferenceInp/x'], 
+            'type': ['InferanceForward']
+            }, 
+        'inferenceOut': {
+            'name': ['Digital_classifier/l_0/inferenceOut/y'], 
+            'type': ['InferanceForward']
+            }
+    }, 
+    {
+        'model_name': 'Digital_classifier', 
+        'layer_id': 1, 
+        'goodness': True, 
+        'from_inp': 0, 
+        'module': 'Linear_dffw', 
+        'args': [500, 500], 
+        'trainInp': {
+            'name': ['Digital_classifier/l_0/trainOut/y'], 
+            'type': ['TrainForward']
+            }, 
+        'trainOut': {
+            'name': ['Digital_classifier/l_1/trainOut/y'], 
+            'type': ['TrainForward']
+            }, 
+        'inferenceInp': {
+            'name': ['Digital_classifier/l_0/inferenceOut/y'], 
+            'type': ['InferanceForward']
+            }, 
+        'inferenceOut': {
+            'name': ['Digital_classifier/l_1/inferenceOut/y'], 
+            'type': ['InferanceForward']
+            }
+        }
+]
+
