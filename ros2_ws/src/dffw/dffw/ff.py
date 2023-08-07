@@ -10,7 +10,6 @@ import os
 from torchvision.datasets import MNIST, CIFAR10
 from torchvision.transforms import Compose, ToTensor, Normalize, Lambda, ToPILImage
 from torch.utils.data import DataLoader
-
 import torch.nn as nn 
 # from torch.nn import Linear
 
@@ -306,7 +305,9 @@ class MasterRunner(object):
                         self.opt.zero_grad()
                         loss.backward()
                         self.loss_val = loss.item()
-                        tbar.set_postfix_str(f'loss={loss.item():.4f}')
+                        allocated_memory = torch.cuda.memory_allocated()
+                        max_allocated_memory = torch.cuda.max_memory_allocated()
+                        tbar.set_postfix_str(f'loss={loss.item():.4f}, AM: {allocated_memory / 1024 ** 2} MB, MAM: {max_allocated_memory / 1024 ** 2} MB')
                         self.opt.step()
                 else:
                     preds = self.last_layer(goodness)
@@ -387,8 +388,12 @@ class MasterRunner(object):
             self.predict_once(x)
             return self.preds.argmax(1)
     def save(self):
-        torch.save(self.last_layer.state_dict(), self.save_path)
+        try:
+            torch.save(self.last_layer.state_dict(), self.save_path)
+        except Exception as e:
+            print(e)
         # save weight to local TBD: to master
+
     def run(self):
         # train model
         self.node.get_logger().info('Train model starting!')
@@ -425,6 +430,9 @@ class MasterRunner(object):
                         print(f'loss={self.loss_val}')
 
         self.node.get_logger().info('Predict test data starting!')
+        allocated_memory = torch.cuda.memory_allocated()
+        max_allocated_memory = torch.cuda.max_memory_allocated()
+        print(f'AM: {allocated_memory / 1024 ** 2} MB, MAM: {max_allocated_memory / 1024 ** 2} MB')
         if self.train_type=='one_shot':
             x_tes, y_tes = self.x_te, self.y_te 
             results = self.predict(self.x_te)

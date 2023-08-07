@@ -39,8 +39,11 @@ class Linear_dffw(nn.Linear):
             # this backward just compute the derivative and hence
             # is not considered backpropagation.
             loss.backward()
+
             if train_type == 'one_shot' or train_type == 'batch_shot':
-                tbar.set_postfix_str(f'loss={loss.item():.4f}')
+                allocated_memory = torch.cuda.memory_allocated()
+                max_allocated_memory = torch.cuda.max_memory_allocated()
+                tbar.set_postfix_str(f'loss={loss.item():.4f} AM: {allocated_memory / 1024 ** 2} MB, MAM: {max_allocated_memory / 1024 ** 2} MB')
             else:
                 print(f'loss={loss.item():.4f}')
             self.opt.step()

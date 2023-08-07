@@ -116,8 +116,10 @@ class Net(torch.nn.Module):
             loss = self.loss_func(preds, y_pos)
             self.opt.zero_grad()
             loss.backward()
-            tbar.set_postfix_str(f'loss={loss.item():0.4f}')
             self.opt.step()  
+            allocated_memory = torch.cuda.memory_allocated()
+            max_allocated_memory = torch.cuda.max_memory_allocated()
+            tbar.set_postfix_str(f'loss={loss.item():0.4f}, AM: {allocated_memory / 1024 ** 2} MB, MAM: {max_allocated_memory / 1024 ** 2} MB')
 
 # def visualize_sample(data, name='', idx=0):
 #     reshaped = data[idx].cpu().reshape(28, 28)
@@ -140,3 +142,6 @@ if __name__ == "__main__":
     x_te, y_te = x_te.cuda(), y_te.cuda()
     preds = net.predict(x_te).argmax(1)
     print('test error:', 1.0 - preds.eq(y_te).float().mean().item())
+    allocated_memory = torch.cuda.memory_allocated()
+    max_allocated_memory = torch.cuda.max_memory_allocated()
+    print(f'AM: {allocated_memory / 1024 ** 2} MB, MAM: {max_allocated_memory / 1024 ** 2} MB')

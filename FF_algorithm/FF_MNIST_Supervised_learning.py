@@ -83,7 +83,8 @@ class Layer(nn.Linear):
             self.bias.unsqueeze(0))
 
     def train(self, x_pos, x_neg):
-        for i in tqdm(range(self.num_epochs)):
+        tbar = tqdm(range(self.num_epochs))
+        for i in tbar:
             g_pos = self.forward(x_pos).pow(2).mean(1)
             g_neg = self.forward(x_neg).pow(2).mean(1)
             # The following loss pushes pos (neg) samples to
@@ -96,6 +97,9 @@ class Layer(nn.Linear):
             # is not considered backpropagation.
             loss.backward()
             self.opt.step()
+            allocated_memory = torch.cuda.memory_allocated()
+            max_allocated_memory = torch.cuda.max_memory_allocated()
+            tbar.set_postfix_str(f'loss={loss.item():0.4f}, AM: {allocated_memory / 1024 ** 2} MB, MAM: {max_allocated_memory / 1024 ** 2} MB')
         return self.forward(x_pos).detach(), self.forward(x_neg).detach()
 
     
@@ -129,3 +133,6 @@ if __name__ == "__main__":
     x_te, y_te = x_te.cuda(), y_te.cuda()
 
     print('test error:', 1.0 - net.predict(x_te).eq(y_te).float().mean().item())
+    allocated_memory = torch.cuda.memory_allocated()
+    max_allocated_memory = torch.cuda.max_memory_allocated()
+    print(f'AM: {allocated_memory / 1024 ** 2} MB, MAM: {max_allocated_memory / 1024 ** 2} MB')
