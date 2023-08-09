@@ -71,3 +71,5 @@ CATKIN_IGNORE
 .vscode-server/
 
 .wget-hsts
+
+.$*
